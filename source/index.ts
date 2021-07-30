@@ -12,16 +12,14 @@ app_e.use(express.json())
 redis.setnx("node:0:parent", "0")
 redis.setnx("node:0:type", "channel_group")
 redis.setnx("node:0:author", "0")
+redis.sadd("node:0:members", "0")
 redis.setnx("node:0:content", "this is the root node")
 
+redis.setnx("id_counter", "1")
+
 redis.setnx("user:0:name", "root user")
-
-redis.setnx("id_counter", "10")
-
-// for debugging
 redis.set("user:0:token", "this-is-very-secure-indeed")
 redis.hsetnx("tokens", "this-is-very-secure-indeed", "0")
-redis.sadd("node:0:members", "0")
 
 bind_api(app)
 

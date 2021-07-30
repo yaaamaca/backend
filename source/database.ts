@@ -14,4 +14,5 @@ export const async_redis = {
     sadd: promisify(redis.sadd).bind(redis),
     spop: promisify(redis.spop).bind(redis),
     zcount: promisify(redis.zcount).bind(redis),
+    zadd: promisify(redis.zadd).bind(redis),
 }

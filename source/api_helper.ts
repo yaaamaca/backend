@@ -46,7 +46,7 @@ export async function assert_member(req: Request, res: Response, next: NextFunct
     const uid = await get_client_id(req, res)
     if (!uid) return
     let nid: string | null = req.params.id
-    while (nid) {
+    while (nid && nid != "0") {
         const is_member = await async_redis.sismember(`node:${nid}:members`, uid)
         if (is_member) return next()
         nid = await async_redis.get(`node:${nid}:parent`)
