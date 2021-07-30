@@ -27,31 +27,18 @@ gets content of a node
 ### GET `/node/<id>/members`
 gets members of a node
 #### Request
-- limit `int`
-- offset `int`
+- index_from `int`
+- index_to `int`
 #### Response
 - list of user
 
-### GET `/node/<id>/refs_to`
-gets nodes referenced by this one
-#### Request
-- limit `int` (optional)
-- offset `int` (optional)
-- time_min `int` (optional)
-- time_max `int` (optional)
-#### Response
-- list of node id
-
-### POST `/node/<id>/refs_to`
-add a new reference to this node TODO
-
-### GET `/node/<id>/refs_by`
+### GET `/node/<id>/children`
 gets nodes referencing this one
 #### Request
-- limit `int` (optional)
-- offset `int` (optional)
-- time_min `int` (optional)
-- time_max `int` (optional)
+- index_from `int` (optional)
+- index_to `int` (optional)
+- time_from `int` (optional)
+- time_to `int` (optional)
 #### Response
 - list of node id
 
@@ -88,8 +75,11 @@ connect to a websocket that sends all events the happen to the node
 - author `-> client`
 - type `string`
 - content `string`
-- refs_by `zset -> node (score: timestamp)`
-- refs_to `zset -> node (score: timestamp)`
+- children `zset -> node (score: timestamp)`
 - members `set -> client`
 - parent `-> node`
+
+## Licence
+
+See `LICENCE` file.
 

@@ -4,21 +4,24 @@ import { assert_author, assert_member, check_id, check_node_exists, get_client_i
 import { async_redis, redis } from "./database"
 
 export function bind_api(app: Application) {
+
+    // app.use((a,b,next) => setTimeout(() => next(), 500))
+
     // TODO make the api only finish the request once database actions are done
     app.post("/create_node", async (req, res) => {
         if (!id_is_valid(req.body.parent)) return res.status(400).send("parent id invalid")
         const id = (await id_counter()).toString()
-        const client = await get_client_id(req,res)
+        const client = await get_client_id(req, res)
         if (!client) return
         const parent = req.body.parent
 
         redis.set(`node:${id}:parent`, req.body.parent)
 
         redis.zadd(`node:${parent}:children`, timestamp(), id)
-        redis.publish(`node:${id}:events`, `add child ${parent}`)
-        
+        redis.publish(`node:${parent}:events`, `add child ${id}`)
+
         redis.set(`node:${id}:author`, client)
-        
+
         redis.sadd(`node:${id}:members`, client)
 
         if (req.body.content) async_redis.set(`node:${id}:content`, req.body.content)
@@ -85,6 +88,7 @@ export function bind_api(app: Application) {
         const id = req.params.id
         if (!id_is_valid(id)) return ws.close(0, "id malformed")
         const lclient = createClient()
+        console.log("subscribe to " + id);
         lclient.subscribe(`node:${id}:events`)
         const listener = (channel: string, message: string) => {
             console.log(channel, message);
@@ -92,6 +96,7 @@ export function bind_api(app: Application) {
         }
         lclient.on("message", listener)
         ws.onclose = () => {
+            console.log("unsubscribe from " + id);
             lclient.unsubscribe()
             lclient.off("message", listener)
         }
